@@ -1,7 +1,7 @@
-use farcaster_frames_template::get_character;
+use farcaster_frames_template::{get_character, APIError, FrameActionPayload};
 use vercel_runtime::{
-    process_request, process_response, run_service, service_fn, Body, Error, Request,
-    Response, ServiceBuilder, StatusCode,
+    http::bad_request, process_request, process_response, run_service, service_fn, Body,
+    Error, Request, RequestPayloadExt, Response, ServiceBuilder, StatusCode,
 };
 
 #[tokio::main]
@@ -33,28 +33,28 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
             .body(Body::from("Method Not Allowed"))?),
     }
 }
+
 pub async fn handle_get_request(req: Request) -> Result<Response<Body>, Error> {
     tracing::info!("Get Handler init");
 
     let frame_image =
         "https://upload.wikimedia.org/wikipedia/commons/6/6c/Star_Wars_Logo.svg";
     let frame_post_url = req.uri();
-
     let html_content = format!(
         r#"<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta property="og:image" content="{0}" /> 
-            <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:post_url" content="{1}" />
-            <meta property="fc:frame:image" content="{0}" />
-            <meta property="fc:frame:button:1" content="What Star Wars guy am I?" />
-            <title>Farcaster Frames Template</title>
-        </head>
-        <body>
-            <h1>What Star Wars guy am I?</h1>
-        </body>
-        </html>"#,
+            <html lang="en">
+            <head>
+                <meta property="og:image" content="{0}" /> 
+                <meta property="fc:frame" content="vNext" />
+                <meta property="fc:frame:post_url" content="{1}" />
+                <meta property="fc:frame:image" content="{0}" />
+                <meta property="fc:frame:button:1" content="What Star Wars guy am I?" />
+                <title>Farcaster Frames Template</title>
+            </head>
+            <body>
+                <h1>What Star Wars guy am I?</h1>
+            </body>
+            </html>"#,
         frame_image, frame_post_url
     );
 
@@ -64,29 +64,50 @@ pub async fn handle_get_request(req: Request) -> Result<Response<Body>, Error> {
         .body(html_content.into())?)
 }
 
-pub async fn handle_post_request(_req: Request) -> Result<Response<Body>, Error> {
+pub async fn handle_post_request(req: Request) -> Result<Response<Body>, Error> {
     tracing::info!("Post Handler init");
 
-    let character = get_character();
-    let frame_image = format!(
-        "https://placehold.co/600x400/black/yellow?text={}",
-        character
-    );
-    let html_content = format!(
-        r#"<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta property="og:image" content="{0}" /> 
-            <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="{0}" />
-            <title>Farcaster Frames Template</title>
-        </head>
-        </html>"#,
-        frame_image
-    );
+    let payload = req.payload::<FrameActionPayload>();
+    match payload {
+        Err(err) => {
+            tracing::info!("Invalid payload {}", err);
+            bad_request(APIError {
+                message: "Invalid payload",
+                code: "invalid_payload",
+            })
+        }
+        Ok(None) => {
+            tracing::info!("No payload");
+            bad_request(APIError {
+                message: "No payload",
+                code: "no_payload",
+            })
+        }
+        Ok(Some(payload)) => {
+            tracing::info!("payload {}", payload);
 
-    Ok(Response::builder()
-        .status(StatusCode::OK)
-        .header("Content-Type", "text/html")
-        .body(html_content.into())?)
+            let character = get_character();
+            let frame_image = format!(
+                "https://placehold.co/600x400/black/yellow?text={}",
+                character
+            );
+            let html_content = format!(
+                r#"<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta property="og:image" content="{0}" /> 
+                    <meta property="fc:frame" content="vNext" />
+                    <meta property="fc:frame:image" content="{0}" />
+                    <title>Farcaster Frames Template</title>
+                </head>
+                </html>"#,
+                frame_image
+            );
+
+            Ok(Response::builder()
+                .status(StatusCode::OK)
+                .header("Content-Type", "text/html")
+                .body(html_content.into())?)
+        }
+    }
 }

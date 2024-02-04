@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = [
     "fmt",
@@ -16,6 +16,8 @@ serde_json = { version = "1.0.106", features = ["raw_value"] }
 serde_derive = "1.0.188"
 vercel_runtime = "1.1.0"
 rand = "0.8.5"
+chrono = { version = "0.4", features = ["serde"] }
+
 
 [lib]
 path = "src/lib.rs"
