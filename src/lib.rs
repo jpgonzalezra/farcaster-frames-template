@@ -1,1 +1,55 @@
-// Libs
+use rand::seq::SliceRandom;
+
+pub fn get_character() -> String {
+    let character = vec![
+        "Luke Skywalker",
+        "Leia Organa",
+        "Han Solo",
+        "Darth Vader",
+        "Anakin Skywalker",
+        "Obi-Wan Kenobi",
+        "Yoda",
+        "R2-D2",
+        "C-3PO",
+        "Chewbacca",
+        "Palpatine",
+        "Boba Fett",
+        "Lando Calrissian",
+        "Mace Windu",
+        "Qui-Gon Jinn",
+        "Padmé Amidala",
+        "Ahsoka Tano",
+        "Darth Maul",
+        "Kylo Ren",
+        "Rey",
+        "Finn",
+        "Poe Dameron",
+        "BB-8",
+        "Jabba the Hutt",
+        "Wedge Antilles",
+        "Greedo",
+        "Jango Fett",
+        "General Grievous",
+        "Count Dooku",
+        "Jar Jar Binks",
+        "Kanan Jarrus",
+        "Ezra Bridger",
+        "Sabine Wren",
+        "Hera Syndulla",
+        "Chopper",
+        "Zeb Orrelios",
+        "Thrawn",
+        "Rex",
+        "Asajj Ventress",
+        "Hondo Ohnaka",
+        "Moff Gideon",
+        "Cara Dune",
+        "Grogu",
+        "The Mandalorian (Din Djarin)",
+        "IG-11",
+        "Greef Karga",
+    ];
+
+    let starter = character.choose(&mut rand::thread_rng()).unwrap();
+    starter.to_string()
+}
