@@ -15,7 +15,6 @@ serde = { version = "1.0.188", features = ["derive"] }
 serde_json = { version = "1.0.106", features = ["raw_value"] }
 serde_derive = "1.0.188"
 vercel_runtime = "1.1.0"
-rand = "0.8.5"
 chrono = { version = "0.4", features = ["serde"] }
 
 

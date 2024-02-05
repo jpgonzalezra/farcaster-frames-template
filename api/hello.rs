@@ -84,9 +84,10 @@ pub async fn handle_post_request(req: Request) -> Result<Response<Body>, Error> 
             })
         }
         Ok(Some(payload)) => {
-            tracing::info!("payload {}", payload);
+            tracing::info!("Payload: {}", payload);
 
-            let character = get_character();
+            let character =
+                get_character(payload.untrusted_data.fid).unwrap_or("".to_string());
             let frame_image = format!(
                 "https://placehold.co/600x400/black/yellow?text={}",
                 character

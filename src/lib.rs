@@ -1,9 +1,8 @@
 use chrono::Utc;
-use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-pub fn get_character() -> String {
+pub fn get_character(fid: i32) -> Result<String, &'static str> {
     let character = vec![
         "Luke Skywalker",
         "Leia Organa",
@@ -53,14 +52,19 @@ pub fn get_character() -> String {
         "Greef Karga",
     ];
 
-    let starter = character.choose(&mut rand::thread_rng()).unwrap();
-    starter.to_string()
+    let random_number_in_range = fid as usize % character.len();
+    tracing::info!("random_number_in_range {}", random_number_in_range);
+
+    character
+        .get(random_number_in_range)
+        .map(|name| name.to_string())
+        .ok_or("Failed to get character")
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct PayloadTrustedData {
+pub struct PayloadTrustedData {
     #[serde(rename = "messageBytes")]
-    message_bytes: String,
+    pub message_bytes: String,
 }
 
 impl fmt::Display for PayloadTrustedData {
@@ -70,9 +74,9 @@ impl fmt::Display for PayloadTrustedData {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct PayloadCastId {
-    fid: i32,
-    hash: String,
+pub struct PayloadCastId {
+    pub fid: i32,
+    pub hash: String,
 }
 
 impl fmt::Display for PayloadCastId {
@@ -82,20 +86,20 @@ impl fmt::Display for PayloadCastId {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct PayloadUntrustedData {
-    fid: i32,
-    url: String,
+pub struct PayloadUntrustedData {
+    pub fid: i32,
+    pub url: String,
     #[serde(rename = "messageHash")]
-    message_hash: String,
+    pub message_hash: String,
     #[serde(with = "chrono::serde::ts_milliseconds")]
-    timestamp: chrono::DateTime<Utc>,
-    network: i32,
+    pub timestamp: chrono::DateTime<Utc>,
+    pub network: i32,
     #[serde(rename = "buttonIndex")]
-    button_index: i32,
+    pub button_index: i32,
     #[serde(rename = "castId")]
-    cast_id: PayloadCastId,
+    pub cast_id: PayloadCastId,
     #[serde(rename = "inputText")]
-    input_text: Option<String>,
+    pub input_text: Option<String>,
 }
 
 impl fmt::Display for PayloadUntrustedData {
@@ -108,9 +112,9 @@ impl fmt::Display for PayloadUntrustedData {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FrameActionPayload {
     #[serde(rename = "trustedData")]
-    trusted_data: PayloadTrustedData,
+    pub trusted_data: PayloadTrustedData,
     #[serde(rename = "untrustedData")]
-    untrusted_data: PayloadUntrustedData,
+    pub untrusted_data: PayloadUntrustedData,
 }
 
 impl fmt::Display for FrameActionPayload {
