@@ -1,6 +1,7 @@
 # Farcaster Frames Template
 
 Template for jumpstarting production-ready Farcaster frames quickly.
+
 — no fuss, all fun!
 
 ## Features
@@ -24,7 +25,7 @@ Ensure you have the following installed to use this template effectively:
 1. Clone the repository to get started:
 
     ```bash
-    git clone https://your-repository/farcaster-frames-template.git
+    git clone https://github.com/jpgonzalezra/farcaster-frames-template.git
     cd farcaster-frames-template
     ```
 
@@ -44,7 +45,7 @@ Use the provided `Makefile` to streamline the local development process:
 make dev
 ```
 
-Each time you run `make dev`, a unique URL is generated, such as https://{something}.loca.lt. This URL can be directly copied and used to test your frame with the (Warpcast Embed Tools)[https://warpcast.com/~/developers/frames], significantly streamlining the development and testing workflow.
+Each time you run `make dev`, a unique URL is generated, such as https://{something}.loca.lt. This URL can be directly copied and used to test your frame with the [Warpcast Embed Tools](https://warpcast.com/~/developers/frames), significantly streamlining the development and testing workflow.
 
 ### Deployment
 
