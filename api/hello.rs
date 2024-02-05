@@ -23,20 +23,20 @@ async fn main() -> Result<(), Error> {
 }
 
 pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
-    tracing::info!("Handler init, method: {}", req.method());
-
     match req.method().as_str() {
         "GET" => handle_get_request(req).await,
         "POST" => handle_post_request(req).await,
-        _ => Ok(Response::builder()
-            .status(StatusCode::METHOD_NOT_ALLOWED)
-            .body(Body::from("Method Not Allowed"))?),
+        _ => {
+            let msg = "Method Not Allowed";
+            tracing::warn!(msg);
+            Ok(Response::builder()
+                .status(StatusCode::METHOD_NOT_ALLOWED)
+                .body(Body::from(msg))?)
+        }
     }
 }
 
 pub async fn handle_get_request(req: Request) -> Result<Response<Body>, Error> {
-    tracing::info!("Get Handler init");
-
     let frame_image =
         "https://upload.wikimedia.org/wikipedia/commons/6/6c/Star_Wars_Logo.svg";
     let frame_post_url = req.uri();
@@ -65,19 +65,17 @@ pub async fn handle_get_request(req: Request) -> Result<Response<Body>, Error> {
 }
 
 pub async fn handle_post_request(req: Request) -> Result<Response<Body>, Error> {
-    tracing::info!("Post Handler init");
-
     let payload = req.payload::<FrameActionPayload>();
     match payload {
         Err(err) => {
-            tracing::info!("Invalid payload {}", err);
+            tracing::error!("Invalid payload {}", err);
             bad_request(APIError {
                 message: "Invalid payload",
                 code: "invalid_payload",
             })
         }
         Ok(None) => {
-            tracing::info!("No payload");
+            tracing::error!("No payload");
             bad_request(APIError {
                 message: "No payload",
                 code: "no_payload",

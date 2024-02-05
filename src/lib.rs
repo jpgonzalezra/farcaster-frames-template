@@ -53,7 +53,6 @@ pub fn get_character(fid: i32) -> Result<String, &'static str> {
     ];
 
     let random_number_in_range = fid as usize % character.len();
-    tracing::info!("random_number_in_range {}", random_number_in_range);
 
     character
         .get(random_number_in_range)
