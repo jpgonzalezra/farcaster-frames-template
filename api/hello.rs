@@ -66,6 +66,9 @@ pub async fn handle_get_request(req: Request) -> Result<Response<Body>, Error> {
 
 pub async fn handle_post_request(req: Request) -> Result<Response<Body>, Error> {
     let payload = req.payload::<FrameActionPayload>();
+
+    // TODO: Check if frame request is valid (using body.trustedData?.messageBytes)
+
     match payload {
         Err(err) => {
             tracing::error!("Invalid payload {}", err);

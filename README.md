@@ -1,4 +1,4 @@
-# Farcaster Frames Template
+# Rust Farcaster Frames Template
 
 Template for jumpstarting production-ready Farcaster frames quickly.
 
